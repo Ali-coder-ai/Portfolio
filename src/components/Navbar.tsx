@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import HoverLinks from "./HoverLinks";
 import { gsap } from "gsap";
-import { ScrollSmoother } from "gsap-trial/ScrollSmoother";
+import { ScrollSmoother } from "gsap/ScrollSmoother";
 import "./styles/Navbar.css";
 
 gsap.registerPlugin(ScrollSmoother, ScrollTrigger);
@@ -22,7 +22,7 @@ const Navbar = () => {
     smoother.scrollTop(0);
     smoother.paused(true);
 
-    let links = document.querySelectorAll(".header nav ul a, .header ul a");
+    let links = document.querySelectorAll(".header nav ul a, .header ul a, .navbar-connect");
     links.forEach((elem) => {
       let element = elem as HTMLAnchorElement;
       element.addEventListener("click", (e) => {
@@ -42,15 +42,17 @@ const Navbar = () => {
     <>
       <header className="header" role="banner">
         <a href="/#" className="navbar-title" data-cursor="disable" aria-label="Muhammad Ali – home">
-          MA
+          Ali
         </a>
         <a
-          href="mailto:muhammad.ali992283@gmail.com"
+          href="#contact-form"
+          data-href="#contact-form"
           className="navbar-connect"
           data-cursor="disable"
-          aria-label="Send email to Muhammad Ali"
+          aria-label="Open to full-time roles – scroll to contact"
         >
-          muhammad.ali992283@gmail.com
+          <span className="navbar-connect-dot" aria-hidden="true"></span>
+          Open to Full-Time Roles
         </a>
         <nav aria-label="Primary navigation">
           <ul>
@@ -65,7 +67,7 @@ const Navbar = () => {
               </a>
             </li>
             <li>
-              <a data-href="#contact" href="#contact">
+              <a data-href="#contact-form" href="#contact-form">
                 <HoverLinks text="CONTACT" />
               </a>
             </li>
