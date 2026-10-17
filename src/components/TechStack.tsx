@@ -313,9 +313,11 @@ const TechStack = () => {
             environmentIntensity={0.5}
             environmentRotation={[0, 4, 2]}
           />
-          <EffectComposer enableNormalPass={false}>
-            {!isMobile && <N8AO color="#001a18" aoRadius={2} intensity={1.15} halfRes />}
-          </EffectComposer>
+          {!isMobile && (
+            <EffectComposer enableNormalPass={false}>
+              <N8AO color="#001a18" aoRadius={2} intensity={1.15} halfRes />
+            </EffectComposer>
+          )}
         </Canvas>
       </div>
     </div>
