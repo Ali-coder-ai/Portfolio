@@ -24,6 +24,8 @@
   filter: blur(60px);
   border-radius: 50%;
   animation: loadingCircle 5s linear infinite;
+  will-change: transform;
+  pointer-events: none;
 }
 .nav-fade {
   position: fixed;
@@ -63,6 +65,8 @@
   filter: blur(50px);
   border-radius: 50%;
   animation: loadingCircle2 5s linear infinite;
+  will-change: transform;
+  pointer-events: none;
 }
 @keyframes loadingCircle2 {
   100% {
@@ -162,7 +166,7 @@
   top: 12%;
   left: 0;
 }
-.landing-intro h2 {
+.landing-intro-greeting {
   margin: 0;
   color: var(--accentColor);
   font-size: 22px;
@@ -191,7 +195,7 @@
   top: inherit;
   z-index: 9;
 }
-.landing-info h3 {
+.landing-info-role {
   font-size: 22px;
   letter-spacing: 2px;
   font-weight: 300;
@@ -200,17 +204,19 @@
 }
 .landing-info h2 {
   margin: 0;
-  margin-top: -20px;
   margin-left: 20px;
   font-family: "Geist", sans-serif;
   font-weight: 600;
   font-size: 32px;
-  line-height: 40px;
+  line-height: 1.15;
   position: relative;
   display: flex;
   flex-wrap: nowrap;
   text-transform: uppercase;
   letter-spacing: 2px;
+}
+.landing-info h2.landing-info-h2-sub {
+  margin-top: 8px;
 }
 .landing-h2-info-1 {
   position: absolute;
@@ -219,6 +225,7 @@
 h2.landing-info-h2 {
   color: #c481ff;
   font-size: 42px;
+  line-height: 1.15;
   width: 120%;
   margin: 0;
   font-family: "Geist", sans-serif;
@@ -234,12 +241,13 @@ h2.landing-info-h2 {
   content: "";
   position: absolute;
   width: 100%;
-  height: 120%;
+  height: 100%;
+  pointer-events: none;
   z-index: 3;
   background-image: linear-gradient(
     0deg,
-    var(--backgroundColor) 40%,
-    rgba(0, 0, 0, 0) 110%
+    var(--backgroundColor) 0%,
+    rgba(0, 0, 0, 0) 20%
   );
   top: 0;
   left: 0;
@@ -251,10 +259,10 @@ h2.landing-info-h2 {
   .character-model {
     z-index: 0;
   }
-  .landing-info h3 {
+  .landing-info-role {
     font-size: 18px;
   }
-  .landing-intro h2 {
+  .landing-intro-greeting {
     font-size: 18px;
   }
   .landing-intro h1 {
@@ -263,32 +271,37 @@ h2.landing-info-h2 {
   }
   .landing-info h2 {
     font-size: 35px;
-    line-height: 40px;
+    line-height: 1.15;
   }
   h2.landing-info-h2 {
     font-size: 38px;
+    line-height: 1.15;
   }
 }
 @media screen and (min-width: 768px) {
   .character-model {
     height: 80vh;
   }
-  .landing-intro h2 {
+  .landing-intro-greeting {
     font-size: 25px;
   }
   .landing-intro h1 {
     font-size: 40px;
     line-height: 35px;
   }
-  .landing-info h3 {
+  .landing-info-role {
     font-size: 25px;
   }
   .landing-info h2 {
     font-size: 45px;
-    line-height: 42px;
+    line-height: 1.15;
+  }
+  .landing-info h2.landing-info-h2-sub {
+    margin-top: 10px;
   }
   h2.landing-info-h2 {
     font-size: 55px;
+    line-height: 1.15;
   }
 }
 @media screen and (min-width: 1025px) {
@@ -338,21 +351,52 @@ h2.landing-info-h2 {
   }
 }
 @media screen and (min-width: 1600px) {
-  .landing-intro h2 {
+  .landing-intro-greeting {
     font-size: 35px;
   }
   .landing-intro h1 {
     font-size: 60px;
     line-height: 55px;
   }
-  .landing-info h3 {
+  .landing-info-role {
     font-size: 35px;
   }
   .landing-info h2 {
     font-size: 65px;
-    line-height: 62px;
+    line-height: 1.15;
+  }
+  .landing-info h2.landing-info-h2-sub {
+    margin-top: 14px;
   }
   h2.landing-info-h2 {
     font-size: 75px;
+    line-height: 1.15;
+  }
+}
+
+/* ── Mobile hero fixes (max-width: 499px) ───────────────────────────────────
+   h2.landing-info-h2 has width:120% which overflows at mobile widths.
+   Clamp all hero text so nothing is cut off at 360–499px.
+   Desktop rules (min-width: 500px and above) are completely untouched.
+──────────────────────────────────────────────────────────────────────────── */
+@media screen and (max-width: 499px) {
+  h2.landing-info-h2 {
+    width: 100%;          /* was 120% — the overflow source */
+    margin-left: 0;       /* was -5px */
+    font-size: clamp(24px, 8vw, 42px);
+  }
+  .landing-info h2 {
+    font-size: clamp(20px, 6.5vw, 32px);
+    margin-left: 0;
+  }
+  .landing-info-role {
+    font-size: clamp(13px, 4vw, 22px);
+  }
+  .landing-intro h1 {
+    font-size: clamp(18px, 6vw, 28px);
+    line-height: 1.2;
+  }
+  .landing-intro-greeting {
+    font-size: clamp(13px, 4vw, 22px);
   }
 }

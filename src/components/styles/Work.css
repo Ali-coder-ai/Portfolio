@@ -8,35 +8,33 @@
 }
 .work-section {
   transition: 0s;
-  height: 100vh;
   box-sizing: border-box;
-  will-change: transform;
+  padding-bottom: 100px;
 }
 .work-container {
   margin: auto;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  align-content: stretch;
 }
 .work-flex {
   width: 100%;
   display: flex;
-  height: 100%;
-  margin-left: -80px;
-  padding-right: 120px;
+  flex-wrap: wrap;
   position: relative;
 }
 .work-box {
-  padding: 80px;
+  padding: 60px 40px;
   display: flex;
   flex-direction: column;
-  width: 600px;
+  flex: 1 1 300px;
+  min-width: 0;
   box-sizing: border-box;
   border-right: 1px solid #363636;
-  flex-shrink: 0;
-  gap: 50px;
+  gap: 40px;
   justify-content: start;
+}
+.work-box:last-child {
+  border-right: none;
 }
 .work-flex .work-box:nth-child(even) {
   flex-direction: column-reverse;
@@ -44,13 +42,12 @@
 .work-flex::before,
 .work-flex::after {
   content: "";
-  width: calc(50000vw);
+  width: 100%;
   height: 1px;
   background-color: #363636;
   position: absolute;
-  left: 50%;
+  left: 0;
   top: 0;
-  transform: translateX(-50%);
 }
 .work-flex::after {
   top: 100%;
@@ -70,7 +67,6 @@
   margin: 0;
   font-weight: 600;
 }
-
 .work-info h4 {
   font-size: 18px;
   font-weight: 400;
@@ -84,6 +80,13 @@
 }
 .work-info > p {
   width: 90%;
+}
+.work-info a {
+  font-size: 14px;
+  color: var(--accentColor);
+  margin-top: 6px;
+  display: inline-block;
+  letter-spacing: 1px;
 }
 .work-image {
   display: flex;
@@ -128,7 +131,11 @@
 .work-image img {
   max-width: 100%;
   max-height: 350px;
+  object-fit: contain;
+  border-radius: 8px;
+  background-color: #f5efe8; /* matches the screenshot's own background */
 }
+
 @media only screen and (max-height: 900px) {
   .work-image img {
     max-height: 250px;
@@ -154,28 +161,13 @@
     font-size: 15px;
   }
   .work-box {
-    width: 450px;
-    padding: 50px;
-  }
-  .work-flex {
-    margin-left: -50px;
-    padding-right: 75px;
+    padding: 40px 25px;
+    gap: 30px;
   }
   .work-section h2 {
     font-size: 50px;
   }
 }
-@media only screen and (max-width: 1400px) {
-  .work-box {
-    width: 350px;
-    padding: 30px;
-  }
-  .work-flex {
-    margin-left: -30px;
-    padding-right: 45px;
-  }
-}
-
 @media only screen and (max-height: 650px) {
   .work-image img {
     max-height: 200px;
@@ -188,23 +180,67 @@
     gap: 20px;
   }
 }
-/* @media only screen and (max-width: 900px) {
-  .work-image img {
-    max-height: 200px;
-  }
-  .work-section h2 {
-    font-size: 40px;
-    margin-bottom: 20px;
-  }
-  .work-box {
-    gap: 20px;
-  }
-} */
 @media only screen and (max-width: 1025px) {
   .work-container {
     align-content: normal;
   }
   .work-flex {
-    height: auto;
+    flex-direction: column;
+  }
+  .work-box {
+    width: 100%;
+    flex: none;
+    border-right: none;
+    border-bottom: 1px solid #363636;
+    padding: 50px 20px;
+  }
+  .work-box:last-child {
+    border-bottom: none;
+  }
+  /* Remove the alternating reverse layout on mobile — it disrupts reading flow
+     in a single-column stack. */
+  .work-flex .work-box:nth-child(even) {
+    flex-direction: column;
+  }
+}
+
+/* ── Mobile work headings (max-width: 1024px) ────────────────────────────────
+   .work-section h2 is 50px and .work-title h3 is 35px at ≤1400px with no
+   further reduction below 1025px — clamp them so they never overflow at 360px.
+   Desktop rules (above 1025px) are completely untouched.
+──────────────────────────────────────────────────────────────────────────── */
+@media only screen and (max-width: 1024px) {
+  .work-section h2 {
+    font-size: clamp(28px, 7vw, 50px);
+    margin-top: 60px;
+  }
+  .work-title h3 {
+    font-size: clamp(24px, 6.5vw, 35px);
+    line-height: 1.1;
+  }
+  .work-info > p {
+    width: 100%;
+  }
+  .work-section {
+    padding-bottom: 60px;
+  }
+}
+
+/* ── Extra-small work cards (max-width: 480px) ───────────────────────────────
+   Reduce padding on the cards and ensure the title number + text don't overlap.
+──────────────────────────────────────────────────────────────────────────── */
+@media only screen and (max-width: 480px) {
+  .work-box {
+    padding: 30px 0;
+  }
+  .work-title {
+    flex-direction: column;
+    gap: 6px;
+  }
+  .work-title > div {
+    text-align: left;
+  }
+  .work-info h4 {
+    font-size: clamp(13px, 3.5vw, 15px);
   }
 }

@@ -3,7 +3,7 @@
   padding-bottom: 100px;
   margin-top: 100px;
 }
-.contact-section h3 {
+.contact-section h2 {
   font-size: 60px;
   font-weight: 400;
   text-transform: uppercase;
@@ -13,7 +13,7 @@
   display: flex;
   justify-content: space-between;
 }
-.contact-flex h4 {
+.contact-flex h3 {
   font-weight: 500;
   margin: 0;
   opacity: 0.6;
@@ -30,12 +30,12 @@ a.contact-social {
   font-size: 25px;
   border-bottom: 1px solid #ccc;
 }
-.contact-box h2 {
+.contact-credit {
   font-weight: 400;
   font-size: 23px;
   margin: 0;
 }
-.contact-box h2 > span {
+.contact-credit > span {
   color: var(--accentColor);
 }
 .contact-box h5 {
@@ -47,10 +47,10 @@ a.contact-social {
   opacity: 0.5;
 }
 @media only screen and (max-width: 1600px) {
-  .contact-section h3 {
+  .contact-section h2 {
     font-size: 50px;
   }
-  .contact-box h2 {
+  .contact-credit {
     font-size: 20px;
   }
   a.contact-social {
@@ -58,10 +58,10 @@ a.contact-social {
   }
 }
 @media only screen and (max-width: 1300px) {
-  .contact-section h3 {
+  .contact-section h2 {
     font-size: 40px;
   }
-  .contact-box h2 {
+  .contact-credit {
     font-size: 18px;
   }
   a.contact-social {
@@ -79,7 +79,7 @@ a.contact-social {
   .contact-flex p {
     margin-bottom: 0px;
   }
-  .contact-flex h4 {
+  .contact-flex h3 {
     margin-top: 20px;
   }
   .contact-section {
@@ -88,5 +88,23 @@ a.contact-social {
   }
   .contact-container {
     width: calc(100% - 25px);
+  }
+}
+
+/* ── Mobile contact fixes (max-width: 600px) ─────────────────────────────────
+   Clamp the section heading and social link sizes on small screens.
+──────────────────────────────────────────────────────────────────────────── */
+@media only screen and (max-width: 600px) {
+  .contact-section h2 {
+    font-size: clamp(28px, 8vw, 40px);
+  }
+  a.contact-social {
+    font-size: clamp(16px, 4.5vw, 20px);
+  }
+  .contact-credit {
+    font-size: clamp(14px, 4vw, 18px);
+  }
+  .contact-box h5 {
+    font-size: clamp(14px, 4vw, 20px);
   }
 }

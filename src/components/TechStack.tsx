@@ -10,6 +10,8 @@ import {
   CylinderCollider,
   RapierRigidBody,
 } from "@react-three/rapier";
+import gsap from "gsap";
+import "./styles/TechStack.css";
 
 const textureLoader = new THREE.TextureLoader();
 const imageUrls = [
@@ -125,32 +127,94 @@ function Pointer({ vec = new THREE.Vector3(), isActive }: PointerProps) {
 }
 
 const TechStack = () => {
-  const [isActive, setIsActive] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const headingRef   = useRef<HTMLHeadingElement>(null);
+  const canvasRef    = useRef<HTMLDivElement>(null);
+  const [isInView, setIsInView] = useState(false);
 
+  // ── Physics pause/resume observer (original, unchanged) ──────────────────
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY || document.documentElement.scrollTop;
-      const threshold = document
-        .getElementById("work")!
-        .getBoundingClientRect().top;
-      setIsActive(scrollY > threshold);
-    };
-    document.querySelectorAll(".header a").forEach((elem) => {
-      const element = elem as HTMLAnchorElement;
-      element.addEventListener("click", () => {
-        const interval = setInterval(() => {
-          handleScroll();
-        }, 10);
-        setTimeout(() => {
-          clearInterval(interval);
-        }, 1000);
-      });
-    });
-    window.addEventListener("scroll", handleScroll);
+    const el = containerRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting);
+      },
+      { rootMargin: "250px 0px" }
+    );
+    observer.observe(el);
+
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      observer.disconnect();
     };
   }, []);
+
+  // ── Entrance animation observer (one-shot, TechStack only) ───────────────
+  useEffect(() => {
+    const el = containerRef.current;
+    const heading = headingRef.current;
+    const canvas  = canvasRef.current;
+    if (!el || !heading || !canvas) return;
+
+    // Respect prefers-reduced-motion — skip all animation
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let hasPlayed = false;
+
+    // Defer initial hidden state to first rAF so there is no
+    // flash-of-invisible-content if the element is already in view on load.
+    const rafId = requestAnimationFrame(() => {
+      if (hasPlayed) return; // already visible before rAF ran
+      // Only transform + opacity — no filter/blur (expensive on canvas parent)
+      gsap.set(heading, { opacity: 0, y: 32, scale: 0.92,
+                          willChange: "transform, opacity" });
+      gsap.set(canvas,  { opacity: 0, y: 28,
+                          willChange: "transform, opacity" });
+    });
+
+    const entranceObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasPlayed) {
+          hasPlayed = true;
+          entranceObserver.disconnect();
+
+          // 1. Heading: scale + slide up + fade, springy ease
+          gsap.to(heading, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.75,
+            ease: "expo.out",          // cubic-bezier(0.16,1,0.3,1) — spring feel
+            // remove willChange when done so layer is freed
+            clearProps: "willChange,scale,y",
+          });
+
+          // 2. Canvas wrapper: fade + gentle lift, no scale (avoids WebGL re-raster)
+          gsap.to(canvas, {
+            opacity: 1,
+            y: 0,
+            duration: 0.85,
+            delay: 0.12,
+            ease: "expo.out",
+            clearProps: "willChange,y",
+          });
+        }
+      },
+      // Fire slightly before the section reaches centre — no visible gap before entry
+      { rootMargin: "0px 0px -10% 0px", threshold: 0 }
+    );
+
+    entranceObserver.observe(el);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      entranceObserver.disconnect();
+      // Clean up in case the component unmounts before animation plays
+      gsap.set([heading, canvas], { clearProps: "all" });
+    };
+  }, []);
+
   const materials = useMemo(() => {
     return textures.map(
       (texture) =>
@@ -167,12 +231,21 @@ const TechStack = () => {
   }, []);
 
   return (
-    <div className="techstack">
-      <h2> My Techstack</h2>
+    <div className="techstack" ref={containerRef}>
+      <h2 className="techstack-heading" ref={headingRef}> My Techstack</h2>
 
+      <div className="techstack-canvas" ref={canvasRef}>
       <Canvas
         shadows
-        gl={{ alpha: true, stencil: false, depth: false, antialias: false }}
+        dpr={[1, 1.5]}
+        frameloop={isInView ? "always" : "never"}
+        gl={{
+          alpha: true,
+          stencil: false,
+          depth: false,
+          antialias: false,
+          powerPreference: "high-performance",
+        }}
         camera={{ position: [0, 0, 20], fov: 32.5, near: 1, far: 100 }}
         onCreated={(state) => (state.gl.toneMappingExposure = 1.5)}
         className="tech-canvas"
@@ -188,13 +261,13 @@ const TechStack = () => {
         />
         <directionalLight position={[0, 5, -4]} intensity={2} />
         <Physics gravity={[0, 0, 0]}>
-          <Pointer isActive={isActive} />
+          <Pointer isActive={isInView} />
           {spheres.map((props, i) => (
             <SphereGeo
               key={i}
               {...props}
               material={materials[Math.floor(Math.random() * materials.length)]}
-              isActive={isActive}
+              isActive={isInView}
             />
           ))}
         </Physics>
@@ -204,9 +277,10 @@ const TechStack = () => {
           environmentRotation={[0, 4, 2]}
         />
         <EffectComposer enableNormalPass={false}>
-          <N8AO color="#0f002c" aoRadius={2} intensity={1.15} />
+          <N8AO color="#0f002c" aoRadius={2} intensity={1.15} halfRes />
         </EffectComposer>
       </Canvas>
+      </div>
     </div>
   );
 };

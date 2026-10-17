@@ -15,7 +15,7 @@
   width: 500px;
   max-width: calc(100% - 15px);
 }
-.about-me h3 {
+.about-me h2 {
   font-size: 25px;
   text-transform: uppercase;
   letter-spacing: 7px;
@@ -67,5 +67,21 @@
   .about-me p {
     font-size: 2.5rem;
     line-height: 2.7rem;
+  }
+}
+
+/* ── Mobile about text (max-width: 767px) ───────────────────────────────────
+   .about-me p is 33px with no mobile override — too large on small screens.
+   Desktop rule (min-width: 1025px) keeps 1.9vw and is completely untouched.
+──────────────────────────────────────────────────────────────────────────── */
+@media only screen and (max-width: 767px) {
+  .about-me p {
+    font-size: clamp(16px, 4.5vw, 26px);
+    line-height: 1.55;
+    letter-spacing: 0.4px;
+  }
+  .about-me h2 {
+    font-size: clamp(13px, 3.5vw, 25px);
+    letter-spacing: 4px;
   }
 }

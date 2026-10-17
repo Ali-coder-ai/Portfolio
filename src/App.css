@@ -26,3 +26,19 @@
     max-width: var(--cWidth);
   }
 }
+
+/* ── Small-mobile section-container fix ──────────────────────────────────────
+   At ≤900px the container is 500px with max-width:var(--cWidth).
+   On very narrow phones (360px) --cWidth is calc(100% - 30px) = 330px, so
+   500px still wins and causes overflow. Force 100% width with side padding
+   instead of a fixed pixel value below 500px.
+──────────────────────────────────────────────────────────────────────────── */
+@media only screen and (max-width: 500px) {
+  .section-container {
+    width: 100%;
+    max-width: 100%;
+    padding-left: 15px;
+    padding-right: 15px;
+    box-sizing: border-box;
+  }
+}

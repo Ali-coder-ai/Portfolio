@@ -3,70 +3,55 @@ import "./styles/Contact.css";
 
 const Contact = () => {
   return (
-    <div className="contact-section section-container" id="contact">
+    <section className="contact-section section-container" id="contact" aria-labelledby="contact-heading">
       <div className="contact-container">
-        <h3>Contact</h3>
+        <h2 id="contact-heading">Contact</h2>
         <div className="contact-flex">
           <div className="contact-box">
-            <h4>Email</h4>
+            <h3>Email</h3>
             <p>
-              <a href="mailto:example@mail.com" data-cursor="disable">
-                example@mail.com
-              </a>
-            </p>
-            <h4>Phone</h4>
-            <p>
-              <a href="tel:+9199999999" data-cursor="disable">
-                +91 99999 99999
+              <a
+                href="mailto:muhammad.ali992283@gmail.com"
+                data-cursor="disable"
+              >
+                muhammad.ali992283@gmail.com
               </a>
             </p>
           </div>
           <div className="contact-box">
-            <h4>Social</h4>
+            <h3>Social</h3>
             <a
-              href="https://github.com"
+              href="https://github.com/Ali-coder-ai"
               target="_blank"
+              rel="noreferrer"
               data-cursor="disable"
               className="contact-social"
+              aria-label="Muhammad Ali on GitHub"
             >
-              Github <MdArrowOutward />
+              GitHub <MdArrowOutward />
             </a>
             <a
-              href="https://www.linkedin.com"
+              href="https://www.linkedin.com/in/muhammad-ali-sde"
               target="_blank"
+              rel="noreferrer"
               data-cursor="disable"
               className="contact-social"
+              aria-label="Muhammad Ali on LinkedIn"
             >
-              Linkedin <MdArrowOutward />
-            </a>
-            <a
-              href="https://x.com"
-              target="_blank"
-              data-cursor="disable"
-              className="contact-social"
-            >
-              Twitter <MdArrowOutward />
-            </a>
-            <a
-              href="https://www.instagram.com"
-              target="_blank"
-              data-cursor="disable"
-              className="contact-social"
-            >
-              Instagram <MdArrowOutward />
+              LinkedIn <MdArrowOutward />
             </a>
           </div>
           <div className="contact-box">
-            <h2>
-              Designed and Developed <br /> by <span>Moncy Yohannan</span>
-            </h2>
+            <p className="contact-credit">
+              Designed and Developed <br /> by <span>Muhammad Ali</span>
+            </p>
             <h5>
-              <MdCopyright /> 2024
+              <MdCopyright /> 2025
             </h5>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

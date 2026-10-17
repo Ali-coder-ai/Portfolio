@@ -1,41 +1,51 @@
 import * as THREE from "three";
 import gsap from "gsap";
 
+let charTl1: gsap.core.Timeline | null = null;
+let charTl2: gsap.core.Timeline | null = null;
+let charTl3: gsap.core.Timeline | null = null;
+let careerTl: gsap.core.Timeline | null = null;
+
 export function setCharTimeline(
   character: THREE.Object3D<THREE.Object3DEventMap> | null,
   camera: THREE.PerspectiveCamera
 ) {
-  let intensity: number = 0;
-  setInterval(() => {
-    intensity = Math.random();
-  }, 200);
+  charTl1?.kill();
+  charTl2?.kill();
+  charTl3?.kill();
+
   const tl1 = gsap.timeline({
     scrollTrigger: {
       trigger: ".landing-section",
       start: "top top",
       end: "bottom top",
-      scrub: true,
+      scrub: 1,
       invalidateOnRefresh: true,
     },
   });
+  charTl1 = tl1;
+
   const tl2 = gsap.timeline({
     scrollTrigger: {
       trigger: ".about-section",
       start: "center 55%",
       end: "bottom top",
-      scrub: true,
+      scrub: 1,
       invalidateOnRefresh: true,
     },
   });
+  charTl2 = tl2;
+
   const tl3 = gsap.timeline({
     scrollTrigger: {
       trigger: ".whatIDO",
       start: "top top",
       end: "bottom top",
-      scrub: true,
+      scrub: 1,
       invalidateOnRefresh: true,
     },
   });
+  charTl3 = tl3;
   let screenLight: any, monitor: any;
   character?.children.forEach((object: any) => {
     if (object.name === "Plane004") {
@@ -53,7 +63,7 @@ export function setCharTimeline(
       object.material.opacity = 0;
       object.material.emissive.set("#C8BFFF");
       gsap.timeline({ repeat: -1, repeatRefresh: true }).to(object.material, {
-        emissiveIntensity: () => intensity * 8,
+        emissiveIntensity: () => Math.random() * 8,
         duration: () => Math.random() * 0.6,
         delay: () => Math.random() * 0.1,
       });
@@ -133,15 +143,18 @@ export function setCharTimeline(
 }
 
 export function setAllTimeline() {
+  careerTl?.kill();
+
   const careerTimeline = gsap.timeline({
     scrollTrigger: {
       trigger: ".career-section",
       start: "top 30%",
       end: "100% center",
-      scrub: true,
+      scrub: 1,
       invalidateOnRefresh: true,
     },
   });
+  careerTl = careerTimeline;
   careerTimeline
     .fromTo(
       ".career-timeline",

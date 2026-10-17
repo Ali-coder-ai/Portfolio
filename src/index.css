@@ -6,7 +6,6 @@
   font-optical-sizing: auto;
   font-style: normal;
   line-height: 1.5;
-  scroll-behavior: smooth;
   color-scheme: light dark;
   color: #eae5ec;
   background-color: var(--backgroundColor);
@@ -119,5 +118,17 @@ body {
 @media screen and (max-width: 900px) {
   .techstack h2 {
     font-size: 40px;
+  }
+}
+
+/* ── Mobile scroll fix ───────────────────────────────────────────────────────
+   body { overflow: hidden } exists for ScrollSmoother (desktop only, >1024px).
+   On mobile ScrollSmoother is inactive, so native scroll must be re-enabled.
+   overflow-x: hidden stays to prevent horizontal scroll.
+──────────────────────────────────────────────────────────────────────────── */
+@media screen and (max-width: 1024px) {
+  body {
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 }

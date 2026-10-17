@@ -11,7 +11,29 @@
   transform: translateX(-50%);
   top: 0;
   z-index: 9999;
+  /* Prevent nav items wrapping under the logo on narrow screens */
+  align-items: center;
+  gap: 8px;
 }
+.header nav ul {
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  column-gap: 40px;
+  row-gap: 8px;
+  align-items: end;
+}
+.header nav ul li {
+  margin-left: 0px;
+  letter-spacing: 1px;
+  color: #ccc;
+  font-weight: 600;
+  cursor: pointer;
+}
+/* Keep legacy selector working in case any JS still targets .header ul */
 .header ul {
   font-size: 12px;
   display: flex;
@@ -32,6 +54,7 @@
 }
 .navbar-connect {
   position: absolute;
+  /* Hidden by default — shown at ≥900px */
   display: none;
   left: 50%;
   top: 50%;
@@ -39,21 +62,26 @@
   font-size: 15px;
   letter-spacing: 1px;
   font-weight: 500;
+  /* Prevent it overflowing between logo and nav on mid-size screens */
+  white-space: nowrap;
 }
 .navbar-title {
   font-weight: 700;
   font-size: 14px;
   letter-spacing: 0.2px;
+  flex-shrink: 0;
 }
 @media only screen and (min-width: 500px) {
   .header {
     padding: 20px 0px;
   }
+  .header nav ul,
   .header ul {
     flex-direction: row;
     align-items: center;
     font-size: 14px;
   }
+  .header nav ul li,
   .header ul li {
     color: #eae5ec;
   }
@@ -70,6 +98,7 @@
   .header {
     padding: 35px 0px;
   }
+  .header nav ul,
   .header ul {
     column-gap: 80px;
     font-size: 16px;
@@ -79,5 +108,21 @@
   }
   .navbar-title {
     font-size: 18px;
+  }
+}
+
+/* ── Very small screens (max-width: 360px) ───────────────────────────────────
+   At 360px the nav links can collide with the logo. Shrink letter-spacing
+   and font-size slightly so all three links fit comfortably.
+──────────────────────────────────────────────────────────────────────────── */
+@media only screen and (max-width: 360px) {
+  .header nav ul,
+  .header ul {
+    column-gap: 16px;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+  }
+  .navbar-title {
+    font-size: 13px;
   }
 }

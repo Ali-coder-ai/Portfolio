@@ -32,16 +32,13 @@
   display: flex;
 }
 .social-icons a {
-  --siLeft: 50%;
-  --siTop: 50%;
   position: absolute;
-  left: var(--siLeft, 50%);
-  top: var(--siTop, 50%);
+  left: 50%;
+  top: 50%;
   transform: translate(-50%, -50%);
   display: flex;
   font-size: 23px;
-  will-change: left, top;
-  transition: transform 0.3s ease-out;
+  will-change: transform;
 }
 .resume-button {
   position: absolute;
@@ -99,5 +96,21 @@ div.resume-button span {
   div.resume-button span {
     font-size: 23px;
     margin-top: -1.5px;
+  }
+}
+
+/* ── Mobile resume button fix (max-width: 767px) ─────────────────────────────
+   The button is rotated -90deg and translated 100% on small screens, which
+   can push it off-screen at narrow widths. Cap font-size and letter-spacing
+   to keep it within bounds. The rotation is intentional (vertical label).
+──────────────────────────────────────────────────────────────────────────── */
+@media only screen and (max-width: 767px) {
+  .resume-button {
+    font-size: clamp(10px, 3vw, 15px);
+    letter-spacing: 2px;
+    bottom: 30px;
+  }
+  div.resume-button span {
+    font-size: clamp(13px, 3.5vw, 17px);
   }
 }

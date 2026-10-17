@@ -13,8 +13,7 @@ const Navbar = () => {
     smoother = ScrollSmoother.create({
       wrapper: "#smooth-wrapper",
       content: "#smooth-content",
-      smooth: 1.7,
-      speed: 1.7,
+      smooth: 0.8,
       effects: true,
       autoResize: true,
       ignoreMobileResize: true,
@@ -23,7 +22,7 @@ const Navbar = () => {
     smoother.scrollTop(0);
     smoother.paused(true);
 
-    let links = document.querySelectorAll(".header ul a");
+    let links = document.querySelectorAll(".header nav ul a, .header ul a");
     links.forEach((elem) => {
       let element = elem as HTMLAnchorElement;
       element.addEventListener("click", (e) => {
@@ -41,39 +40,42 @@ const Navbar = () => {
   }, []);
   return (
     <>
-      <div className="header">
-        <a href="/#" className="navbar-title" data-cursor="disable">
-          Logo
+      <header className="header" role="banner">
+        <a href="/#" className="navbar-title" data-cursor="disable" aria-label="Muhammad Ali – home">
+          MA
         </a>
         <a
-          href="mailto:example@mail.com"
+          href="mailto:muhammad.ali992283@gmail.com"
           className="navbar-connect"
           data-cursor="disable"
+          aria-label="Send email to Muhammad Ali"
         >
-          example@mail.com
+          muhammad.ali992283@gmail.com
         </a>
-        <ul>
-          <li>
-            <a data-href="#about" href="#about">
-              <HoverLinks text="ABOUT" />
-            </a>
-          </li>
-          <li>
-            <a data-href="#work" href="#work">
-              <HoverLinks text="WORK" />
-            </a>
-          </li>
-          <li>
-            <a data-href="#contact" href="#contact">
-              <HoverLinks text="CONTACT" />
-            </a>
-          </li>
-        </ul>
-      </div>
+        <nav aria-label="Primary navigation">
+          <ul>
+            <li>
+              <a data-href="#about" href="#about">
+                <HoverLinks text="ABOUT" />
+              </a>
+            </li>
+            <li>
+              <a data-href="#work" href="#work">
+                <HoverLinks text="WORK" />
+              </a>
+            </li>
+            <li>
+              <a data-href="#contact" href="#contact">
+                <HoverLinks text="CONTACT" />
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </header>
 
-      <div className="landing-circle1"></div>
-      <div className="landing-circle2"></div>
-      <div className="nav-fade"></div>
+      <div className="landing-circle1" aria-hidden="true"></div>
+      <div className="landing-circle2" aria-hidden="true"></div>
+      <div className="nav-fade" aria-hidden="true"></div>
     </>
   );
 };

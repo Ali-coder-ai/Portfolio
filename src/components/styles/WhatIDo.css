@@ -52,14 +52,15 @@
 
 .what-noTouch:hover,
 .what-content-active {
-  min-height: 67%;
+  min-height: 75%;
   padding: 40px 50px;
+  overflow: visible;
 }
 
 .what-noTouch:hover ~ .what-content,
 .what-box-in:hover .what-noTouch:not(:hover),
 .what-content.what-sibling {
-  min-height: 33%;
+  min-height: 25%;
   padding: 10px 50px;
 }
 .what-content h3 {
@@ -206,7 +207,17 @@
 }
 .what-content-in {
   height: 100%;
+  max-height: 130px;
   overflow: hidden;
+  transition: max-height 0.5s ease;
+}
+
+/* Expand: sole clip controller — set large enough for any tag-row count.
+   Also let the parent panel overflow so it doesn't clip first.           */
+.what-noTouch:hover .what-content-in,
+.what-content-active .what-content-in {
+  max-height: 600px;
+  padding-bottom: 20px;
 }
 .what-content-in h5 {
   font-weight: 300;
@@ -229,6 +240,7 @@
 .what-content-flex {
   display: flex;
   gap: 5px;
+  row-gap: 8px;
   flex-wrap: wrap;
 }
 .what-tags {
@@ -238,6 +250,7 @@
   background-color: rgba(255, 255, 255, 0.15);
   border: 1px solid #ffffff50;
   border-radius: 30px;
+  white-space: nowrap;
 }
 @media only screen and (max-width: 1600px) {
   .what-box h2 {
@@ -302,14 +315,15 @@
   }
   .what-noTouch:hover,
   .what-content-active {
-    min-height: 67%;
+    min-height: 75%;
     padding: 50px;
+    overflow: visible;
   }
 
   .what-noTouch:hover ~ .what-content,
   .what-box-in:hover .what-noTouch:not(:hover),
   .what-content.what-sibling {
-    min-height: 33%;
+    min-height: 25%;
     padding: 10px 50px;
   }
 }
@@ -336,7 +350,9 @@
   .what-content {
     width: 100%;
   }
+  /* Show the panel that is display:none at all widths above this breakpoint */
   .what-box-in {
+    display: flex;
     margin-left: 0px;
     height: 450px;
   }
@@ -360,6 +376,7 @@
   .what-noTouch:hover,
   .what-content-active {
     padding: 10px 30px;
+    overflow: visible;
   }
   .what-tags {
     font-size: 11px;
@@ -384,10 +401,34 @@
     max-width: calc(100% - 25px);
     margin: 0;
   }
+  .what-box h2 {
+    font-size: clamp(36px, 11vw, 55px);
+    line-height: 1.05;
+  }
 }
 @media only screen and (min-width: 1950px) {
   .what-box h2 {
     font-size: 7rem;
     line-height: 6.8rem;
+  }
+}
+
+/* ── Tablet WhatIDo overflow fix (768px–1024px) ──────────────────────────────
+   At max-width:1024px the existing rule sets .what-content { width: 500px }.
+   At 768px with --cWidth:94% the parent .what-box is ~50% of 722px = 361px,
+   so 500px overflows causing horizontal scroll.
+   Fix: cap with max-width:100% and box-sizing:border-box.
+   The ≤900px rule already sets width:100% so only the 768–1024px gap needs
+   this patch. Desktop rules (>1024px) are completely untouched.
+──────────────────────────────────────────────────────────────────────────── */
+@media only screen and (max-width: 1024px) {
+  .what-content {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  /* Prevent the fixed margin-left from pushing content off-screen */
+  .what-box-in {
+    max-width: 100%;
+    box-sizing: border-box;
   }
 }
