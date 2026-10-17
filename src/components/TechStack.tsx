@@ -44,13 +44,14 @@ const textures = imageUrls.map((url) => {
 const sphereGeometry = new THREE.SphereGeometry(1, 28, 28);
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Sphere descriptors — scale + material index assigned ONCE at module level.
-// FIX #2: material index is stable per sphere; Math.random() is never called
-//         during render, so balls keep their textures across re-renders.
+// Sphere descriptors — fewer balls on mobile to keep 60fps
 // ─────────────────────────────────────────────────────────────────────────────
-const spheres = [...Array(30)].map((_, i) => ({
+const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
+const BALL_COUNT = isMobile ? 18 : 30;
+
+const spheres = [...Array(BALL_COUNT)].map((_, i) => ({
   scale:         [0.7, 1, 0.8, 1, 1][Math.floor(Math.random() * 5)],
-  materialIndex: i % textures.length,  // stable round-robin assignment
+  materialIndex: i % textures.length,
 }));
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -270,7 +271,7 @@ const TechStack = () => {
       <div className="techstack-canvas" ref={canvasRef}>
         {/* FIX #3: `shadows` prop removed from Canvas — no shadow maps computed */}
         <Canvas
-          dpr={[1, 1.5]}
+          dpr={isMobile ? [1, 1] : [1, 1.5]}
           frameloop={isInView ? "always" : "never"}
           gl={{
             alpha:           true,
@@ -313,7 +314,7 @@ const TechStack = () => {
             environmentRotation={[0, 4, 2]}
           />
           <EffectComposer enableNormalPass={false}>
-            <N8AO color="#001a18" aoRadius={2} intensity={1.15} halfRes />
+            {!isMobile && <N8AO color="#001a18" aoRadius={2} intensity={1.15} halfRes />}
           </EffectComposer>
         </Canvas>
       </div>
