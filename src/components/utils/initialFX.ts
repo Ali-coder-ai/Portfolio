@@ -7,10 +7,12 @@ export function initialFX() {
   smoother.paused(false);
   document.getElementsByTagName("main")[0].classList.add("main-active");
   gsap.to("body", {
-    backgroundColor: "#0b080c",
+    backgroundColor: "#0a0d12",
     duration: 0.5,
     delay: 1,
   });
+
+  const isMobile = window.matchMedia("(pointer: coarse)").matches;
 
   var landingText = new SplitText(
     [".landing-info-role", ".landing-intro-greeting", ".landing-intro h1"],
@@ -19,56 +21,92 @@ export function initialFX() {
       linesClass: "split-line",
     }
   );
-  gsap.fromTo(
-    landingText.chars,
-    { opacity: 0, y: 80, filter: "blur(5px)" },
-    {
-      opacity: 1,
-      duration: 1.2,
-      filter: "blur(0px)",
-      clearProps: "filter",
-      ease: "power3.inOut",
-      y: 0,
-      stagger: 0.025,
-      delay: 0.3,
-    }
-  );
+
+  // Mobile: skip filter:blur — animating blur per-char on mobile causes
+  // compositor layer explosions (one layer per char) and heavy repaints.
+  // Desktop: unchanged.
+  if (isMobile) {
+    gsap.fromTo(
+      landingText.chars,
+      { opacity: 0, y: 60 },
+      {
+        opacity: 1,
+        duration: 0.8,
+        ease: "power3.out",
+        y: 0,
+        stagger: 0.018,
+        delay: 0.2,
+      }
+    );
+  } else {
+    gsap.fromTo(
+      landingText.chars,
+      { opacity: 0, y: 80, filter: "blur(5px)" },
+      {
+        opacity: 1,
+        duration: 1.2,
+        filter: "blur(0px)",
+        clearProps: "filter",
+        ease: "power3.inOut",
+        y: 0,
+        stagger: 0.025,
+        delay: 0.3,
+      }
+    );
+  }
 
   let TextProps = { type: "chars,lines", linesClass: "split-h2" };
 
   var landingText2 = new SplitText(".landing-h2-info", TextProps);
-  gsap.fromTo(
-    landingText2.chars,
-    { opacity: 0, y: 80, filter: "blur(5px)" },
-    {
-      opacity: 1,
-      duration: 1.2,
-      filter: "blur(0px)",
-      clearProps: "filter",
-      ease: "power3.inOut",
-      y: 0,
-      stagger: 0.025,
-      delay: 0.3,
-    }
-  );
+
+  if (isMobile) {
+    gsap.fromTo(
+      landingText2.chars,
+      { opacity: 0, y: 60 },
+      {
+        opacity: 1,
+        duration: 0.8,
+        ease: "power3.out",
+        y: 0,
+        stagger: 0.018,
+        delay: 0.2,
+      }
+    );
+  } else {
+    gsap.fromTo(
+      landingText2.chars,
+      { opacity: 0, y: 80, filter: "blur(5px)" },
+      {
+        opacity: 1,
+        duration: 1.2,
+        filter: "blur(0px)",
+        clearProps: "filter",
+        ease: "power3.inOut",
+        y: 0,
+        stagger: 0.025,
+        delay: 0.3,
+      }
+    );
+  }
 
   gsap.fromTo(
     ".landing-info-h2",
     { opacity: 0, y: 30 },
     {
       opacity: 1,
-      duration: 1.2,
+      duration: isMobile ? 0.7 : 1.2,
       ease: "power1.inOut",
       y: 0,
-      delay: 0.8,
+      delay: isMobile ? 0.4 : 0.8,
     }
   );
+
   gsap.fromTo(
     [".header", ".icons-section", ".nav-fade"],
     { opacity: 0 },
     {
       opacity: 1,
-      duration: 1.2,
+      duration: isMobile ? 0.6 : 1.2,
       ease: "power1.inOut",
       delay: 0.1,
     }
@@ -78,8 +116,23 @@ export function initialFX() {
   var landingText4 = new SplitText(".landing-h2-1", TextProps);
   var landingText5 = new SplitText(".landing-h2-2", TextProps);
 
-  LoopText(landingText2, landingText3);
-  LoopText(landingText4, landingText5);
+  // Mobile: skip the infinite loop animation — it runs forever on a repeat:-1
+  // timeline, consuming GPU ticks even when the section is off-screen.
+  // The text is shown in its initial state instead.
+  if (!isMobile) {
+    LoopText(landingText2, landingText3);
+    LoopText(landingText4, landingText5);
+  } else {
+    // Ensure the "second" chars are visible immediately on mobile
+    // (they would otherwise stay at opacity:0 waiting for LoopText).
+    gsap.set(
+      [
+        ...landingText3.chars,
+        ...landingText5.chars,
+      ],
+      { opacity: 1, y: 0 }
+    );
+  }
 }
 
 function LoopText(Text1: SplitText, Text2: SplitText) {

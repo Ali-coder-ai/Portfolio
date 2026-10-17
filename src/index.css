@@ -145,3 +145,35 @@ body {
     overflow-x: hidden;
   }
 }
+
+/* ── Mobile: content-visibility on heavy off-screen sections ─────────────────
+   Tells the browser it can skip rendering these sections until they are near
+   the viewport. contain-intrinsic-size preserves scroll height.
+   Only applied on touch/mobile — desktop is completely untouched.
+──────────────────────────────────────────────────────────────────────────── */
+@media (pointer: coarse) and (max-width: 1024px) {
+  .about-section,
+  .whatIDO,
+  .career-section,
+  .work-section,
+  .cf-section,
+  .contact-section {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 600px;
+  }
+}
+
+/* ── Reduced motion ──────────────────────────────────────────────────────────
+   Users who set "reduce motion" in system prefs get instant opacity-only
+   transitions instead of sliding/scaling animations.
+──────────────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

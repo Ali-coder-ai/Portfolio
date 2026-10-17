@@ -25,7 +25,8 @@
   filter: blur(90px);
   border-radius: 50%;
   animation: loadingCircle 5s linear infinite;
-  will-change: transform;
+  /* will-change removed — permanent GPU layer wastes VRAM on mobile.
+     GSAP adds it only during animation via clearProps. */
   pointer-events: none;
 }
 .nav-fade {
@@ -66,7 +67,7 @@
   filter: blur(80px);
   border-radius: 50%;
   animation: loadingCircle2 5s linear infinite;
-  will-change: transform;
+  /* will-change removed — same reason as circle1 */
   pointer-events: none;
 }
 @keyframes loadingCircle2 {
@@ -406,5 +407,26 @@ h2.landing-info-h2 {
   }
   .landing-intro-greeting {
     font-size: clamp(13px, 4vw, 22px);
+  }
+}
+
+/* ── Mobile glow performance (max-width: 768px) ─────────────────────────────
+   Large fixed blur values trigger full-viewport repaints on iOS on every
+   animation frame. Halving them cuts repaint area with no visible difference
+   at small screen sizes. Desktop rules are completely untouched.
+──────────────────────────────────────────────────────────────────────────── */
+@media screen and (max-width: 768px) {
+  .landing-circle1 {
+    filter: blur(50px);
+    width: 200px;
+    height: 200px;
+  }
+  .landing-circle2 {
+    filter: blur(45px);
+    width: 200px;
+    height: 200px;
+  }
+  .character-rim {
+    filter: blur(35px);
   }
 }

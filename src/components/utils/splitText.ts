@@ -13,17 +13,31 @@ gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText);
 export default function setSplitText() {
   ScrollTrigger.config({ ignoreMobileResize: true });
 
+  const isMobile = window.innerWidth <= 768;
+  const isTouch  = window.matchMedia("(pointer: coarse)").matches;
+
   const paras: NodeListOf<ParaElement> = document.querySelectorAll(".para");
   const titles: NodeListOf<ParaElement> = document.querySelectorAll(".title");
 
-  // On very small screens use a simpler trigger start so text isn't
-  // already past the viewport before the animation fires.
-  const TriggerStart = window.innerWidth <= 768
-    ? "top 90%"
+  // Mobile: fire early (top 85%) so text is never already past the viewport.
+  // Tablet: top 75%. Desktop: unchanged.
+  const TriggerStart = isMobile
+    ? "top 85%"
     : window.innerWidth <= 1024
     ? "top 60%"
     : "20% 60%";
-  const ToggleAction = "play pause resume reverse";
+
+  // Mobile: play once only — no reverse on scroll-up (saves scroll repaints).
+  // Desktop: unchanged play/pause/resume/reverse.
+  const ToggleAction = isTouch
+    ? "play none none none"
+    : "play pause resume reverse";
+
+  // Mobile: shorter duration + tighter stagger so the animation finishes fast.
+  const paraDuration  = isMobile ? 0.6  : 1;
+  const paraStagger   = isMobile ? 0.01 : 0.02;
+  const titleDuration = isMobile ? 0.5  : 0.8;
+  const titleStagger  = isMobile ? 0.02 : 0.03;
 
   paras.forEach((para: ParaElement) => {
     para.classList.add("visible");
@@ -39,7 +53,7 @@ export default function setSplitText() {
 
     para.anim = gsap.fromTo(
       para.split.words,
-      { autoAlpha: 0, y: 80 },
+      { autoAlpha: 0, y: 60 },
       {
         autoAlpha: 1,
         scrollTrigger: {
@@ -47,13 +61,14 @@ export default function setSplitText() {
           toggleActions: ToggleAction,
           start: TriggerStart,
         },
-        duration: 1,
+        duration: paraDuration,
         ease: "power3.out",
         y: 0,
-        stagger: 0.02,
+        stagger: paraStagger,
       }
     );
   });
+
   titles.forEach((title: ParaElement) => {
     if (title.anim) {
       title.anim.progress(1).kill();
@@ -65,7 +80,7 @@ export default function setSplitText() {
     });
     title.anim = gsap.fromTo(
       title.split.chars,
-      { autoAlpha: 0, y: 80, rotate: 10 },
+      { autoAlpha: 0, y: 60, rotate: 10 },
       {
         autoAlpha: 1,
         scrollTrigger: {
@@ -73,11 +88,11 @@ export default function setSplitText() {
           toggleActions: ToggleAction,
           start: TriggerStart,
         },
-        duration: 0.8,
+        duration: titleDuration,
         ease: "power2.inOut",
         y: 0,
         rotate: 0,
-        stagger: 0.03,
+        stagger: titleStagger,
       }
     );
   });
