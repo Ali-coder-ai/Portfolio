@@ -152,7 +152,6 @@ body {
    Only applied on touch/mobile — desktop is completely untouched.
 ──────────────────────────────────────────────────────────────────────────── */
 @media (pointer: coarse) and (max-width: 1024px) {
-  .about-section,
   .whatIDO,
   .career-section,
   .work-section,

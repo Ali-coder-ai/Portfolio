@@ -123,14 +123,16 @@ export function initialFX() {
     LoopText(landingText2, landingText3);
     LoopText(landingText4, landingText5);
   } else {
-    // Ensure the "second" chars are visible immediately on mobile
-    // (they would otherwise stay at opacity:0 waiting for LoopText).
+    // On mobile: hide the absolutely-positioned duplicate words entirely.
+    // They exist only for the desktop loop animation (position:absolute, top:0)
+    // and would overlap the first words if made visible on mobile.
+    // The first words (landingText2, landingText4) are already animated above.
     gsap.set(
       [
         ...landingText3.chars,
         ...landingText5.chars,
       ],
-      { opacity: 1, y: 0 }
+      { opacity: 0, display: "none" }
     );
   }
 }
