@@ -429,4 +429,15 @@ h2.landing-info-h2 {
   .character-rim {
     filter: blur(35px);
   }
+  /* The ::before pseudo-element paints a 700px solid background block
+     below the 3D canvas — on desktop it's needed to cover scroll content,
+     but on mobile it creates a massive blank gap above the About section.
+     Hide it; the page background colour already covers the gap. */
+  .character-model::before {
+    display: none;
+  }
+  /* Also reduce the ::after gradient height so the fade is proportionate */
+  .character-model::after {
+    height: 120px;
+  }
 }
