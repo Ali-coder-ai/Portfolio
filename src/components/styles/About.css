@@ -20,16 +20,21 @@
   text-transform: uppercase;
   letter-spacing: 7px;
   font-weight: 400;
-  color: var(--accentColor);
+  color: var(--label);
 }
-
 .about-me p {
-  font-size: 33px;
-  font-weight: 600;
-  line-height: 36px;
-  letter-spacing: 1px;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.75;
+  letter-spacing: 0.1px;
+  color: var(--body);
+  margin-bottom: 1.2em;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
-
+.about-me p:last-child {
+  margin-bottom: 0;
+}
 @media only screen and (min-width: 600px) {
   .about-section {
     justify-content: center;
@@ -43,6 +48,9 @@
   }
   .about-section {
     opacity: 1;
+  }
+  .about-me p {
+    font-size: 17px;
   }
 }
 @media only screen and (min-width: 1025px) {
@@ -59,26 +67,21 @@
     width: 50%;
   }
   .about-me p {
-    font-size: 1.9vw;
-    line-height: 2.3vw;
+    font-size: clamp(15px, 1.1vw, 19px);
+    line-height: 1.75;
   }
 }
 @media only screen and (min-width: 1950px) {
   .about-me p {
-    font-size: 2.5rem;
-    line-height: 2.7rem;
+    font-size: 18px;
+    line-height: 1.75;
   }
 }
-
-/* ── Mobile about text (max-width: 767px) ───────────────────────────────────
-   .about-me p is 33px with no mobile override — too large on small screens.
-   Desktop rule (min-width: 1025px) keeps 1.9vw and is completely untouched.
-──────────────────────────────────────────────────────────────────────────── */
 @media only screen and (max-width: 767px) {
   .about-me p {
-    font-size: clamp(16px, 4.5vw, 26px);
-    line-height: 1.55;
-    letter-spacing: 0.4px;
+    font-size: 15px;
+    line-height: 1.75;
+    letter-spacing: 0px;
   }
   .about-me h2 {
     font-size: clamp(13px, 3.5vw, 25px);

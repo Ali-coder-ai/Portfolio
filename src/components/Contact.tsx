@@ -5,7 +5,8 @@ const Contact = () => {
   return (
     <section className="contact-section section-container" id="contact" aria-labelledby="contact-heading">
       <div className="contact-container">
-        <h2 id="contact-heading">Contact</h2>
+        <h2 id="contact-heading">Get In Touch</h2>
+        <p className="contact-subtext">Prefer email or social? Reach me directly.</p>
         <div className="contact-flex">
           <div className="contact-box">
             <h3>Email</h3>

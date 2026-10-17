@@ -70,7 +70,7 @@
   overflow: visible;
 }
 .loading-hover {
-  background-color: #a87cff;
+  background-color: rgba(20, 184, 166, 0.6);
   width: 250px;
   height: 120px;
   position: absolute;
@@ -78,7 +78,7 @@
   left: var(--mouse-x);
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  filter: blur(30px);
+  filter: blur(40px);
   opacity: 1;
   transition: opacity 500ms;
 }
@@ -194,9 +194,11 @@
   color: var(--backgroundColor);
 }
 .loader-title {
-  font-weight: 700;
-  font-size: 14px;
-  letter-spacing: 0.2px;
+  font-family: "Geist", sans-serif;
+  font-weight: 600;
+  font-size: 28px;         /* mobile default — matches navbar */
+  letter-spacing: 0.5px;
+  line-height: 1;
 }
 @keyframes blink {
   0% {
@@ -272,7 +274,7 @@
   width: 15px;
   height: 15px;
   border-radius: 50%;
-  background-color: #a87cff;
+  background-color: #14b8a6;
   animation: ball25 7s infinite;
   transform: translateY(10px);
   animation-timing-function: cubic-bezier(0.3, 1.18, 0.63, 1.28);
@@ -289,19 +291,12 @@
   text-transform: uppercase;
 }
 .loading-marquee span {
-  padding: 0px 50px;
+  padding: 0px 28px;
   position: relative;
 }
-.loading-marquee span::before {
-  content: "";
-  width: 20px;
-  height: 20px;
-  background-color: var(--backgroundColor);
-  position: absolute;
-  top: 50%;
-  border-radius: 50px;
-  left: 0px;
-  transform: translate(-50%, -50%);
+/* Bullet separator — tighter padding, literal • character only */
+.marquee-sep {
+  padding: 0 14px !important;
 }
 @keyframes ball25 {
   0% {
@@ -350,7 +345,7 @@
     padding: 20px 0px;
   }
   .loader-title {
-    font-size: 16px;
+    font-size: 28px;   /* matches navbar — was stale 16px */
   }
 }
 @media only screen and (min-width: 1200px) {
@@ -358,6 +353,6 @@
     padding: 35px 0px;
   }
   .loader-title {
-    font-size: 18px;
+    font-size: 34px;   /* matches navbar — was stale 18px */
   }
 }

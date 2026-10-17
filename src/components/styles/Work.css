@@ -1,10 +1,12 @@
+/* "My Work" — single solid off-white heading, no teal span */
 .work-section h2 {
   margin-top: 100px;
   font-size: 70px;
   font-weight: 500;
+  color: var(--text);
 }
 .work-section h2 > span {
-  color: var(--accentColor);
+  color: var(--text);
 }
 .work-section {
   transition: 0s;
@@ -74,7 +76,7 @@
 }
 .work-info p {
   font-weight: 200;
-  color: #adacac;
+  color: var(--muted);
   margin: 0;
   margin-top: 3px;
 }

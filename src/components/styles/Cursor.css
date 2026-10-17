@@ -8,8 +8,8 @@
   border-radius: 50px;
   pointer-events: none;
   z-index: 99;
-  background-color: #e6c3ff;
-  box-shadow: 0px 0px 30px 0px rgb(175, 131, 255);
+  background-color: rgba(153, 246, 228, 0.75);
+  box-shadow: 0px 0px 20px 0px rgba(45, 212, 191, 0.6);
   mix-blend-mode: difference;
   will-change: transform;
   transform: translateZ(0);

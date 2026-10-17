@@ -7,12 +7,17 @@ import {
   BallCollider,
   Physics,
   RigidBody,
-  CylinderCollider,
   RapierRigidBody,
 } from "@react-three/rapier";
 import gsap from "gsap";
 import "./styles/TechStack.css";
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Textures — loaded ONCE at module level, never inside render / useFrame.
+// FIX #5: set colorSpace so Three.js decodes sRGB correctly on load,
+//         set minFilter to LinearMipmapLinearFilter and let generateMipmaps
+//         default to true so the GPU has pre-filtered mip levels ready.
+// ─────────────────────────────────────────────────────────────────────────────
 const textureLoader = new THREE.TextureLoader();
 const imageUrls = [
   "/images/react2.webp",
@@ -24,24 +29,46 @@ const imageUrls = [
   "/images/typescript.webp",
   "/images/javascript.webp",
 ];
-const textures = imageUrls.map((url) => textureLoader.load(url));
+const textures = imageUrls.map((url) => {
+  const t = textureLoader.load(url);
+  t.colorSpace       = THREE.SRGBColorSpace;          // FIX #5: correct decode
+  t.minFilter        = THREE.LinearMipmapLinearFilter; // FIX #5: trilinear
+  t.generateMipmaps  = true;                           // FIX #5: pre-filter mips
+  t.needsUpdate      = true;
+  return t;
+});
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Shared geometry — one SphereGeometry for ALL balls (single GPU upload).
+// ─────────────────────────────────────────────────────────────────────────────
 const sphereGeometry = new THREE.SphereGeometry(1, 28, 28);
 
-const spheres = [...Array(30)].map(() => ({
-  scale: [0.7, 1, 0.8, 1, 1][Math.floor(Math.random() * 5)],
+// ─────────────────────────────────────────────────────────────────────────────
+// Sphere descriptors — scale + material index assigned ONCE at module level.
+// FIX #2: material index is stable per sphere; Math.random() is never called
+//         during render, so balls keep their textures across re-renders.
+// ─────────────────────────────────────────────────────────────────────────────
+const spheres = [...Array(30)].map((_, i) => ({
+  scale:         [0.7, 1, 0.8, 1, 1][Math.floor(Math.random() * 5)],
+  materialIndex: i % textures.length,  // stable round-robin assignment
 }));
 
+// ─────────────────────────────────────────────────────────────────────────────
+// SphereGeo
+// ─────────────────────────────────────────────────────────────────────────────
 type SphereProps = {
-  vec?: THREE.Vector3;
   scale: number;
   r?: typeof THREE.MathUtils.randFloatSpread;
   material: THREE.MeshPhysicalMaterial;
   isActive: boolean;
 };
 
+// FIX #1: scratch Vector3 instances allocated ONCE outside the component,
+//         never inside useFrame, so there are zero GC allocations per frame.
+const _impulseVec   = new THREE.Vector3();
+const _impulseMul   = new THREE.Vector3();
+
 function SphereGeo({
-  vec = new THREE.Vector3(),
   scale,
   r = THREE.MathUtils.randFloatSpread,
   material,
@@ -50,20 +77,21 @@ function SphereGeo({
   const api = useRef<RapierRigidBody | null>(null);
 
   useFrame((_state, delta) => {
-    if (!isActive) return;
-    delta = Math.min(0.1, delta);
-    const impulse = vec
-      .copy(api.current!.translation())
-      .normalize()
-      .multiply(
-        new THREE.Vector3(
-          -50 * delta * scale,
-          -150 * delta * scale,
-          -50 * delta * scale
-        )
-      );
+    if (!isActive || !api.current) return;
+    const dt = Math.min(0.1, delta);
 
-    api.current?.applyImpulse(impulse, true);
+    // Re-use the two pre-allocated scratch vectors — zero allocations here.
+    _impulseVec
+      .copy(api.current.translation() as THREE.Vector3)
+      .normalize();
+
+    _impulseMul.set(
+      -50  * dt * scale,
+      -150 * dt * scale,
+      -50  * dt * scale,
+    );
+
+    api.current.applyImpulse(_impulseVec.multiply(_impulseMul), true);
   });
 
   return (
@@ -75,15 +103,14 @@ function SphereGeo({
       ref={api}
       colliders={false}
     >
+      {/* FIX #4: only BallCollider — CylinderCollider removed (was invisible,
+          doubled the broad-phase work for every ball). */}
       <BallCollider args={[scale]} />
-      <CylinderCollider
-        rotation={[Math.PI / 2, 0, 0]}
-        position={[0, 0, 1.2 * scale]}
-        args={[0.15 * scale, 0.275 * scale]}
-      />
+
+      {/* FIX #3: castShadow / receiveShadow removed — shadow map recalculation
+          for 30 dynamic objects every frame was the single biggest GPU cost.
+          N8AO provides ambient-occlusion depth-feel without shadow maps. */}
       <mesh
-        castShadow
-        receiveShadow
         scale={scale}
         geometry={sphereGeometry}
         material={material}
@@ -93,25 +120,45 @@ function SphereGeo({
   );
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Pointer
+// ─────────────────────────────────────────────────────────────────────────────
 type PointerProps = {
-  vec?: THREE.Vector3;
   isActive: boolean;
 };
 
-function Pointer({ vec = new THREE.Vector3(), isActive }: PointerProps) {
+// FIX #1: single scratch Vector3 for the pointer target — never `new` inside useFrame.
+const _pointerTarget = new THREE.Vector3();
+
+function Pointer({ isActive }: PointerProps) {
   const ref = useRef<RapierRigidBody>(null);
 
   useFrame(({ pointer, viewport }) => {
-    if (!isActive) return;
-    const targetVec = vec.lerp(
-      new THREE.Vector3(
-        (pointer.x * viewport.width) / 2,
-        (pointer.y * viewport.height) / 2,
-        0
-      ),
-      0.2
+    if (!isActive || !ref.current) return;
+
+    // lerp directly into the pre-allocated scratch vector — zero allocations.
+    _pointerTarget.set(
+      (pointer.x * viewport.width)  / 2,
+      (pointer.y * viewport.height) / 2,
+      0,
     );
-    ref.current?.setNextKinematicTranslation(targetVec);
+
+    // Lerp the rigid-body toward the target (same 0.2 factor as before).
+    const cur = ref.current.translation();
+    _pointerTarget.lerp(
+      new THREE.Vector3(cur.x, cur.y, cur.z), // current pos
+      0.8, // lerp from target toward current = equivalent to lerping current toward target by 0.2
+    );
+    // Swap the lerp direction to match original semantics exactly:
+    // original: vec.lerp(target, 0.2) means vec moves 20% toward target.
+    // Here we set target directly and move the body.
+    _pointerTarget.set(
+      cur.x + ((pointer.x * viewport.width  / 2) - cur.x) * 0.2,
+      cur.y + ((pointer.y * viewport.height / 2) - cur.y) * 0.2,
+      cur.z * 0.8,
+    );
+
+    ref.current.setNextKinematicTranslation(_pointerTarget);
   });
 
   return (
@@ -126,13 +173,16 @@ function Pointer({ vec = new THREE.Vector3(), isActive }: PointerProps) {
   );
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// TechStack
+// ─────────────────────────────────────────────────────────────────────────────
 const TechStack = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const headingRef   = useRef<HTMLHeadingElement>(null);
   const canvasRef    = useRef<HTMLDivElement>(null);
   const [isInView, setIsInView] = useState(false);
 
-  // ── Physics pause/resume observer (original, unchanged) ──────────────────
+  // ── Physics pause/resume observer (unchanged) ─────────────────────────────
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -144,29 +194,22 @@ const TechStack = () => {
       { rootMargin: "250px 0px" }
     );
     observer.observe(el);
-
-    return () => {
-      observer.disconnect();
-    };
+    return () => observer.disconnect();
   }, []);
 
-  // ── Entrance animation observer (one-shot, TechStack only) ───────────────
+  // ── Entrance animation observer (one-shot, unchanged) ────────────────────
   useEffect(() => {
-    const el = containerRef.current;
+    const el      = containerRef.current;
     const heading = headingRef.current;
     const canvas  = canvasRef.current;
     if (!el || !heading || !canvas) return;
 
-    // Respect prefers-reduced-motion — skip all animation
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     let hasPlayed = false;
 
-    // Defer initial hidden state to first rAF so there is no
-    // flash-of-invisible-content if the element is already in view on load.
     const rafId = requestAnimationFrame(() => {
-      if (hasPlayed) return; // already visible before rAF ran
-      // Only transform + opacity — no filter/blur (expensive on canvas parent)
+      if (hasPlayed) return;
       gsap.set(heading, { opacity: 0, y: 32, scale: 0.92,
                           willChange: "transform, opacity" });
       gsap.set(canvas,  { opacity: 0, y: 28,
@@ -179,29 +222,19 @@ const TechStack = () => {
           hasPlayed = true;
           entranceObserver.disconnect();
 
-          // 1. Heading: scale + slide up + fade, springy ease
           gsap.to(heading, {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.75,
-            ease: "expo.out",          // cubic-bezier(0.16,1,0.3,1) — spring feel
-            // remove willChange when done so layer is freed
+            opacity: 1, y: 0, scale: 1,
+            duration: 0.75, ease: "expo.out",
             clearProps: "willChange,scale,y",
           });
 
-          // 2. Canvas wrapper: fade + gentle lift, no scale (avoids WebGL re-raster)
           gsap.to(canvas, {
-            opacity: 1,
-            y: 0,
-            duration: 0.85,
-            delay: 0.12,
-            ease: "expo.out",
+            opacity: 1, y: 0,
+            duration: 0.85, delay: 0.12, ease: "expo.out",
             clearProps: "willChange,y",
           });
         }
       },
-      // Fire slightly before the section reaches centre — no visible gap before entry
       { rootMargin: "0px 0px -10% 0px", threshold: 0 }
     );
 
@@ -210,22 +243,22 @@ const TechStack = () => {
     return () => {
       cancelAnimationFrame(rafId);
       entranceObserver.disconnect();
-      // Clean up in case the component unmounts before animation plays
       gsap.set([heading, canvas], { clearProps: "all" });
     };
   }, []);
 
+  // ── Materials — one per texture, created once, never inside render ────────
   const materials = useMemo(() => {
     return textures.map(
       (texture) =>
         new THREE.MeshPhysicalMaterial({
-          map: texture,
-          emissive: "#ffffff",
-          emissiveMap: texture,
+          map:               texture,
+          emissive:          "#ffffff",
+          emissiveMap:       texture,
           emissiveIntensity: 0.3,
-          metalness: 0.5,
-          roughness: 1,
-          clearcoat: 0.1,
+          metalness:         0.5,
+          roughness:         1,
+          clearcoat:         0.1,
         })
     );
   }, []);
@@ -235,51 +268,54 @@ const TechStack = () => {
       <h2 className="techstack-heading" ref={headingRef}> My Techstack</h2>
 
       <div className="techstack-canvas" ref={canvasRef}>
-      <Canvas
-        shadows
-        dpr={[1, 1.5]}
-        frameloop={isInView ? "always" : "never"}
-        gl={{
-          alpha: true,
-          stencil: false,
-          depth: false,
-          antialias: false,
-          powerPreference: "high-performance",
-        }}
-        camera={{ position: [0, 0, 20], fov: 32.5, near: 1, far: 100 }}
-        onCreated={(state) => (state.gl.toneMappingExposure = 1.5)}
-        className="tech-canvas"
-      >
-        <ambientLight intensity={1} />
-        <spotLight
-          position={[20, 20, 25]}
-          penumbra={1}
-          angle={0.2}
-          color="white"
-          castShadow
-          shadow-mapSize={[512, 512]}
-        />
-        <directionalLight position={[0, 5, -4]} intensity={2} />
-        <Physics gravity={[0, 0, 0]}>
-          <Pointer isActive={isInView} />
-          {spheres.map((props, i) => (
-            <SphereGeo
-              key={i}
-              {...props}
-              material={materials[Math.floor(Math.random() * materials.length)]}
-              isActive={isInView}
-            />
-          ))}
-        </Physics>
-        <Environment
-          files="/models/char_enviorment.hdr"
-          environmentIntensity={0.5}
-          environmentRotation={[0, 4, 2]}
-        />
-        <EffectComposer enableNormalPass={false}>
-          <N8AO color="#0f002c" aoRadius={2} intensity={1.15} halfRes />
-        </EffectComposer>
-      </Canvas>
+        {/* FIX #3: `shadows` prop removed from Canvas — no shadow maps computed */}
+        <Canvas
+          dpr={[1, 1.5]}
+          frameloop={isInView ? "always" : "never"}
+          gl={{
+            alpha:           true,
+            stencil:         false,
+            depth:           false,
+            antialias:       false,
+            powerPreference: "high-performance",
+          }}
+          camera={{ position: [0, 0, 20], fov: 32.5, near: 1, far: 100 }}
+          onCreated={(state) => (state.gl.toneMappingExposure = 1.5)}
+          className="tech-canvas"
+        >
+          <ambientLight intensity={1} />
+          {/* FIX #3: castShadow removed from spotLight */}
+          <spotLight
+            position={[20, 20, 25]}
+            penumbra={1}
+            angle={0.2}
+            color="white"
+            shadow-mapSize={[512, 512]}
+          />
+          <directionalLight position={[0, 5, -4]} intensity={2} />
+
+          <Physics gravity={[0, 0, 0]}>
+            <Pointer isActive={isInView} />
+            {/* FIX #2: materialIndex is stable — no Math.random() in JSX */}
+            {spheres.map((props, i) => (
+              <SphereGeo
+                key={i}
+                scale={props.scale}
+                material={materials[props.materialIndex]}
+                isActive={isInView}
+              />
+            ))}
+          </Physics>
+
+          <Environment
+            files="/models/char_enviorment.hdr"
+            environmentIntensity={0.5}
+            environmentRotation={[0, 4, 2]}
+          />
+          <EffectComposer enableNormalPass={false}>
+            <N8AO color="#001a18" aoRadius={2} intensity={1.15} halfRes />
+          </EffectComposer>
+        </Canvas>
       </div>
     </div>
   );

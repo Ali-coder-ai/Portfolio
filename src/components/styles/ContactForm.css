@@ -1,0 +1,307 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   ContactForm — dark-theme form section
+   Uses only CSS variables already defined in index.css:
+     --accentColor : #2dd4bf
+     --backgroundColor : #070d12
+   Fonts, colors, and focus styles match the rest of the portfolio.
+───────────────────────────────────────────────────────────────────────────── */
+
+/* ── Section wrapper ─────────────────────────────────────────────────────── */
+.cf-section {
+  margin: auto;
+  padding-top: 80px;
+  padding-bottom: 120px;
+  /* Clears the fixed navbar when the browser scrolls to #contact-form
+     (native anchor on mobile; ScrollSmoother handles offset on desktop) */
+  scroll-margin-top: 70px;
+}
+
+/* ── Entrance animation (fade + slide up) ────────────────────────────────── */
+@keyframes cf-fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.cf-section.cf-visible {
+  animation: cf-fadeUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── Heading block ───────────────────────────────────────────────────────── */
+.cf-heading {
+  margin-bottom: 48px;
+}
+/* "LET'S WORK TOGETHER" — single solid off-white, no teal span */
+.cf-heading h2 {
+  font-size: 60px;
+  font-weight: 400;
+  text-transform: uppercase;
+  margin: 0 0 12px;
+  letter-spacing: 1px;
+  line-height: 1.05;
+  color: var(--text);
+}
+.cf-heading h2 span {
+  color: var(--text);
+}
+.cf-heading p {
+  margin: 0;
+  font-size: 17px;
+  color: var(--muted);
+  font-weight: 400;
+  letter-spacing: 0.3px;
+}
+
+/* ── Form layout ─────────────────────────────────────────────────────────── */
+.cf-form {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* Two-column row (Name + Email side by side on desktop) */
+.cf-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+/* ── Individual field ────────────────────────────────────────────────────── */
+.cf-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cf-field label {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* shared input / select / textarea base */
+.cf-field input,
+.cf-field select,
+.cf-field textarea {
+  background: transparent;
+  border: 1px solid rgba(45, 212, 191, 0.22);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: "Geist", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  padding: 13px 16px;
+  min-height: 44px;
+  box-sizing: border-box;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* placeholder */
+.cf-field input::placeholder,
+.cf-field textarea::placeholder {
+  color: rgba(234, 229, 236, 0.3);
+}
+
+/* focus ring — matches teal accent */
+.cf-field input:focus,
+.cf-field select:focus,
+.cf-field textarea:focus {
+  border-color: var(--accentColor);
+  box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.15);
+}
+
+/* select chevron */
+.cf-field select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%232dd4bf' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-right: 40px;
+  cursor: pointer;
+}
+
+/* select option colours (browser-painted — dark bg) */
+.cf-field select option {
+  background-color: #071210;
+  color: #eae5ec;
+}
+
+/* textarea */
+.cf-field textarea {
+  resize: vertical;
+  min-height: 130px;
+  line-height: 1.55;
+}
+
+/* ── Interest hint (shown only for "Write your own message") ────────────── */
+.cf-interest-hint {
+  font-size: 12px;
+  color: var(--accentColor);
+  opacity: 0.8;
+  letter-spacing: 0.3px;
+}
+
+/* ── Inline error messages ───────────────────────────────────────────────── */
+.cf-error {
+  font-size: 12px;
+  color: #ff7b8a;
+  letter-spacing: 0.3px;
+  margin: 0;
+  min-height: 16px; /* reserve space so layout doesn't jump */
+}
+
+/* error state border */
+.cf-field.cf-has-error input,
+.cf-field.cf-has-error select,
+.cf-field.cf-has-error textarea {
+  border-color: rgba(255, 123, 138, 0.6);
+}
+
+/* SEND MESSAGE — solid teal, dark text, no gradient */
+.cf-submit {
+  align-self: flex-start;
+  background-color: var(--accent);
+  color: #0a0d12;
+  border: none;
+  border-radius: 6px;
+  font-family: "Geist", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 15px 40px;
+  min-height: 52px;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+  outline: none;
+  -webkit-appearance: none;
+}
+.cf-submit:hover:not(:disabled) {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+.cf-submit:focus-visible {
+  box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.45);
+}
+.cf-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Status messages (aria-live region) ─────────────────────────────────── */
+.cf-status {
+  font-size: 15px;
+  font-weight: 500;
+  padding: 14px 18px;
+  border-radius: 6px;
+  margin-top: 4px;
+  letter-spacing: 0.3px;
+}
+.cf-status--success {
+  background: rgba(130, 255, 180, 0.08);
+  border: 1px solid rgba(130, 255, 180, 0.3);
+  color: #82ffb4;
+}
+.cf-status--error {
+  background: rgba(255, 123, 138, 0.08);
+  border: 1px solid rgba(255, 123, 138, 0.3);
+  color: #ff7b8a;
+}
+.cf-retry {
+  background: none;
+  border: none;
+  color: var(--accentColor);
+  font-family: "Geist", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 10px;
+}
+.cf-retry:focus-visible {
+  outline: 2px solid var(--accentColor);
+  outline-offset: 2px;
+}
+
+/* ── Honeypot — visually hidden, accessible to bots ─────────────────────── */
+.cf-honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  tab-index: -1;
+}
+
+/* ── Divider above the form section ─────────────────────────────────────── */
+.cf-divider {
+  width: 100%;
+  height: 1px;
+  background: rgba(45, 212, 191, 0.12);
+  margin-bottom: 80px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────────────────────────────────────────── */
+
+/* Tablet (≤900px) — heading size down, submit full width */
+@media only screen and (max-width: 900px) {
+  .cf-heading h2 {
+    font-size: 40px;
+  }
+  .cf-section {
+    padding-top: 60px;
+    padding-bottom: 80px;
+  }
+  .cf-submit {
+    align-self: stretch;
+    width: 100%;
+  }
+}
+
+/* Mobile (≤700px) — collapse two-column row to single column */
+@media only screen and (max-width: 700px) {
+  .cf-row-2 {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .cf-heading h2 {
+    font-size: clamp(28px, 8vw, 40px);
+  }
+  .cf-heading p {
+    font-size: 15px;
+  }
+  .cf-section {
+    padding-top: 40px;
+    padding-bottom: 60px;
+  }
+}
+
+/* Very small (≤360px) — no overflow */
+@media only screen and (max-width: 360px) {
+  .cf-field input,
+  .cf-field select,
+  .cf-field textarea {
+    font-size: 16px; /* keep at 16px — iOS zoom prevention */
+    padding: 12px 12px;
+  }
+  .cf-submit {
+    padding: 14px 20px;
+    font-size: 14px;
+  }
+}
