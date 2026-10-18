@@ -29,6 +29,9 @@ export function initialFX() {
 
   const isMobile = window.matchMedia("(pointer: coarse)").matches;
 
+  // Create a master timeline to sync all animations
+  const masterTl = gsap.timeline();
+
   var landingText = new SplitText(
     [".landing-info-role", ".landing-intro-greeting", ".landing-intro h1"],
     {
@@ -42,7 +45,7 @@ export function initialFX() {
   // Desktop: unchanged.
   // NOTE: delay removed — animations start immediately when initialFX() is called
   if (isMobile) {
-    gsap.fromTo(
+    masterTl.fromTo(
       landingText.chars,
       { opacity: 0, y: 60 },
       {
@@ -50,10 +53,11 @@ export function initialFX() {
         duration: 0.8,
         ease: "power3.out",
         y: 0,
-      }
+      },
+      0
     );
   } else {
-    gsap.fromTo(
+    masterTl.fromTo(
       landingText.chars,
       { opacity: 0, y: 80, filter: "blur(5px)" },
       {
@@ -63,7 +67,8 @@ export function initialFX() {
         clearProps: "filter",
         ease: "power3.inOut",
         y: 0,
-      }
+      },
+      0
     );
   }
 
@@ -72,7 +77,7 @@ export function initialFX() {
   var landingText2 = new SplitText(".landing-h2-info", TextProps);
 
   if (isMobile) {
-    gsap.fromTo(
+    masterTl.fromTo(
       landingText2.chars,
       { opacity: 0, y: 60 },
       {
@@ -80,10 +85,11 @@ export function initialFX() {
         duration: 0.8,
         ease: "power3.out",
         y: 0,
-      }
+      },
+      0
     );
   } else {
-    gsap.fromTo(
+    masterTl.fromTo(
       landingText2.chars,
       { opacity: 0, y: 80, filter: "blur(5px)" },
       {
@@ -93,11 +99,12 @@ export function initialFX() {
         clearProps: "filter",
         ease: "power3.inOut",
         y: 0,
-      }
+      },
+      0
     );
   }
 
-  gsap.fromTo(
+  masterTl.fromTo(
     ".landing-info-h2",
     { opacity: 0, y: 30 },
     {
@@ -105,17 +112,19 @@ export function initialFX() {
       duration: isMobile ? 0.7 : 1.2,
       ease: "power1.inOut",
       y: 0,
-    }
+    },
+    0
   );
 
-  gsap.fromTo(
+  masterTl.fromTo(
     [".header", ".icons-section", ".nav-fade"],
     { opacity: 0 },
     {
       opacity: 1,
       duration: isMobile ? 0.6 : 1.2,
       ease: "power1.inOut",
-    }
+    },
+    0  // Ensure this starts at the same time as other animations (time 0)
   );
 
   var landingText3 = new SplitText(".landing-h2-info-1", TextProps);
