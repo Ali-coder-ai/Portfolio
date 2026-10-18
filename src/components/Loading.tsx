@@ -7,11 +7,13 @@ const Loading = ({ percent }: { percent: number }) => {
   const { setIsLoading } = useLoading();
   const [loaded,   setLoaded]   = useState(false); // adds .loading-complete → shows Welcome
   const [clicked,  setClicked]  = useState(false); // adds .loading-clicked  → expand transition
+  const [fadeOut,  setFadeOut]  = useState(false); // adds .fade-out → gradually disappear
 
   // Single fire guard — the whole sequence runs exactly once.
   const sequenceFiredRef = useRef(false);
   // Ref to the wrap element so we can listen to its transitionend.
   const wrapRef = useRef<HTMLDivElement>(null);
+  const screenRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (percent < 100) return;
@@ -92,13 +94,26 @@ const Loading = ({ percent }: { percent: number }) => {
       }
       if (cancelled) return;
 
-      // STEP 5: Unmount loading screen and start portfolio animations simultaneously.
-      // setIsLoading(false) removes the overlay; initialFX() starts hero text/nav
-      // animations — both happen on the same frame so there is no blank gap.
+      // STEP 5: Fade out loading screen and start portfolio animations simultaneously.
+      // Set .fade-out class to trigger CSS opacity transition (0.8s).
+      // While fading, call initialFX() to start hero text/portfolio animations.
+      // After fade completes, setIsLoading(false) removes the component entirely.
       const module = await initialFXModule;
       if (cancelled) return;
-      setIsLoading(false);
+      
+      // Start fade-out CSS transition and portfolio animations at the same time
+      setFadeOut(true);
       if (module.initialFX) module.initialFX();
+      
+      // Wait for fade-out animation to complete (0.8s)
+      await new Promise<void>((r) => {
+        const t = setTimeout(r, 800);
+        cleanups.push(() => clearTimeout(t));
+      });
+      if (cancelled) return;
+      
+      // Now remove the loading component completely
+      setIsLoading(false);
     }
 
     runSequence();
@@ -136,7 +151,7 @@ const Loading = ({ percent }: { percent: number }) => {
         </div>
       </div>
 
-      <div className="loading-screen">
+      <div className={`loading-screen ${fadeOut && "fade-out"}`} ref={screenRef}>
         <div className="loading-marquee">
           <Marquee speed={60}>
             <span>Software Engineer</span>
