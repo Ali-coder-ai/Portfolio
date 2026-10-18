@@ -50,7 +50,6 @@ export function initialFX() {
         duration: 0.8,
         ease: "power3.out",
         y: 0,
-        stagger: 0.018,
       }
     );
   } else {
@@ -64,7 +63,6 @@ export function initialFX() {
         clearProps: "filter",
         ease: "power3.inOut",
         y: 0,
-        stagger: 0.025,
       }
     );
   }
@@ -82,7 +80,6 @@ export function initialFX() {
         duration: 0.8,
         ease: "power3.out",
         y: 0,
-        stagger: 0.018,
       }
     );
   } else {
@@ -96,7 +93,6 @@ export function initialFX() {
         clearProps: "filter",
         ease: "power3.inOut",
         y: 0,
-        stagger: 0.025,
       }
     );
   }
@@ -158,7 +154,6 @@ function LoopText(Text1: SplitText, Text2: SplitText) {
       duration: 1.2,
       ease: "power3.inOut",
       y: 0,
-      stagger: 0.1,
     },
     0
   )
@@ -169,7 +164,6 @@ function LoopText(Text1: SplitText, Text2: SplitText) {
         duration: 1.2,
         ease: "power3.inOut",
         y: 0,
-        stagger: 0.1,
       },
       1
     )
@@ -180,7 +174,6 @@ function LoopText(Text1: SplitText, Text2: SplitText) {
         y: -80,
         duration: 1.2,
         ease: "power3.inOut",
-        stagger: 0.1,
       },
       0
     )
@@ -190,7 +183,6 @@ function LoopText(Text1: SplitText, Text2: SplitText) {
         y: -80,
         duration: 1.2,
         ease: "power3.inOut",
-        stagger: 0.1,
       },
       1
     );
