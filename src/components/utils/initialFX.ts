@@ -22,7 +22,7 @@ export function initialFX() {
   }, 1300);
 
   gsap.to("body", {
-    backgroundColor: "#ffffff",
+    backgroundColor: "#0a0d12",
     duration: 0.5,
     delay: 0.8,  // Wait for loading screen fade-out to complete before darkening
   });
