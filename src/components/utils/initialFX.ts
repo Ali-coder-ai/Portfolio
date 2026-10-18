@@ -24,7 +24,6 @@ export function initialFX() {
   gsap.to("body", {
     backgroundColor: "#0a0d12",
     duration: 0.5,
-    delay: 1,
   });
 
   const isMobile = window.matchMedia("(pointer: coarse)").matches;
@@ -40,6 +39,7 @@ export function initialFX() {
   // Mobile: skip filter:blur — animating blur per-char on mobile causes
   // compositor layer explosions (one layer per char) and heavy repaints.
   // Desktop: unchanged.
+  // NOTE: delay removed — animations start immediately when initialFX() is called
   if (isMobile) {
     gsap.fromTo(
       landingText.chars,
@@ -50,7 +50,6 @@ export function initialFX() {
         ease: "power3.out",
         y: 0,
         stagger: 0.018,
-        delay: 0.2,
       }
     );
   } else {
@@ -65,7 +64,6 @@ export function initialFX() {
         ease: "power3.inOut",
         y: 0,
         stagger: 0.025,
-        delay: 0.3,
       }
     );
   }
@@ -84,7 +82,6 @@ export function initialFX() {
         ease: "power3.out",
         y: 0,
         stagger: 0.018,
-        delay: 0.2,
       }
     );
   } else {
@@ -99,7 +96,6 @@ export function initialFX() {
         ease: "power3.inOut",
         y: 0,
         stagger: 0.025,
-        delay: 0.3,
       }
     );
   }
@@ -112,7 +108,6 @@ export function initialFX() {
       duration: isMobile ? 0.7 : 1.2,
       ease: "power1.inOut",
       y: 0,
-      delay: isMobile ? 0.4 : 0.8,
     }
   );
 
@@ -123,7 +118,6 @@ export function initialFX() {
       opacity: 1,
       duration: isMobile ? 0.6 : 1.2,
       ease: "power1.inOut",
-      delay: 0.1,
     }
   );
 
@@ -154,8 +148,6 @@ export function initialFX() {
 
 function LoopText(Text1: SplitText, Text2: SplitText) {
   var tl = gsap.timeline({ repeat: -1, repeatDelay: 1 });
-  const delay = 4;
-  const delay2 = delay * 2 + 1;
 
   tl.fromTo(
     Text2.chars,
@@ -166,7 +158,6 @@ function LoopText(Text1: SplitText, Text2: SplitText) {
       ease: "power3.inOut",
       y: 0,
       stagger: 0.1,
-      delay: delay,
     },
     0
   )
@@ -178,7 +169,6 @@ function LoopText(Text1: SplitText, Text2: SplitText) {
         ease: "power3.inOut",
         y: 0,
         stagger: 0.1,
-        delay: delay2,
       },
       1
     )
@@ -190,7 +180,6 @@ function LoopText(Text1: SplitText, Text2: SplitText) {
         duration: 1.2,
         ease: "power3.inOut",
         stagger: 0.1,
-        delay: delay,
       },
       0
     )
@@ -201,7 +190,6 @@ function LoopText(Text1: SplitText, Text2: SplitText) {
         duration: 1.2,
         ease: "power3.inOut",
         stagger: 0.1,
-        delay: delay2,
       },
       1
     );
