@@ -55,17 +55,15 @@ a:hover {
 }
 main {
   opacity: 1;
-  transition: 0.3s;
 }
+/* main-active: portfolio content is always visible (opacity:1).
+   Individual elements are revealed by GSAP tweens in initialFX which
+   set them to opacity:0 and animate them in — no blank gap possible. */
 .main-active {
-  opacity: 0;
-  animation: fadeIn 1s 1;
-  animation-fill-mode: forwards;
+  opacity: 1;
 }
 @keyframes fadeIn {
-  100% {
-    opacity: 1;
-  }
+  100% { opacity: 1; }
 }
 body {
   margin: 0;

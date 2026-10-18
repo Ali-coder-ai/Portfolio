@@ -1,8 +1,8 @@
 import {
   createContext,
   PropsWithChildren,
+  useCallback,
   useContext,
-  useEffect,
   useState,
 } from "react";
 import Loading from "../components/Loading";
@@ -17,17 +17,18 @@ export const LoadingContext = createContext<LoadingType | null>(null);
 
 export const LoadingProvider = ({ children }: PropsWithChildren) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [loading, setLoading] = useState(0);
+  const [loading, setLoadingRaw]  = useState(0);
 
-  const value = {
-    isLoading,
-    setIsLoading,
-    setLoading,
-  };
-  useEffect(() => {}, [loading]);
+  // Monotonic setter — context-level guard so the displayed percent
+  // can never go backward even if setLoading is called out of order.
+  const setLoading = useCallback((next: number) => {
+    setLoadingRaw((prev) => Math.max(prev, Math.min(100, next)));
+  }, []);
+
+  const value: LoadingType = { isLoading, setIsLoading, setLoading };
 
   return (
-    <LoadingContext.Provider value={value as LoadingType}>
+    <LoadingContext.Provider value={value}>
       {isLoading && <Loading percent={loading} />}
       <main className="main-body">{children}</main>
     </LoadingContext.Provider>

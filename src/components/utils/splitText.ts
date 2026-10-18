@@ -10,6 +10,11 @@ interface ParaElement extends HTMLElement {
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText);
 
+// Guard so the refresh listener is added ONCE, not on every setSplitText() call.
+// Previously: ScrollTrigger.addEventListener("refresh", () => setSplitText())
+// was inside setSplitText() — every call added another copy, doubling each time.
+let refreshListenerAdded = false;
+
 export default function setSplitText() {
   ScrollTrigger.config({ ignoreMobileResize: true });
 
@@ -19,21 +24,16 @@ export default function setSplitText() {
   const paras: NodeListOf<ParaElement> = document.querySelectorAll(".para");
   const titles: NodeListOf<ParaElement> = document.querySelectorAll(".title");
 
-  // Mobile: fire early (top 85%) so text is never already past the viewport.
-  // Tablet: top 75%. Desktop: unchanged.
   const TriggerStart = isMobile
     ? "top 85%"
     : window.innerWidth <= 1024
     ? "top 60%"
     : "20% 60%";
 
-  // Mobile: play once only — no reverse on scroll-up (saves scroll repaints).
-  // Desktop: unchanged play/pause/resume/reverse.
   const ToggleAction = isTouch
     ? "play none none none"
     : "play pause resume reverse";
 
-  // Mobile: shorter duration + tighter stagger so the animation finishes fast.
   const paraDuration  = isMobile ? 0.6  : 1;
   const paraStagger   = isMobile ? 0.01 : 0.02;
   const titleDuration = isMobile ? 0.5  : 0.8;
@@ -97,5 +97,9 @@ export default function setSplitText() {
     );
   });
 
-  ScrollTrigger.addEventListener("refresh", () => setSplitText());
+  // Add the refresh listener only once — not on every setSplitText() call.
+  if (!refreshListenerAdded) {
+    refreshListenerAdded = true;
+    ScrollTrigger.addEventListener("refresh", () => setSplitText());
+  }
 }

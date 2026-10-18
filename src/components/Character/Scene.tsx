@@ -96,7 +96,7 @@ const Scene = () => {
           if (!isMounted) return;
           light.turnOnLights();
           animations.startIntro();
-        }, 2500);
+        }, 500);
       });
     });
 

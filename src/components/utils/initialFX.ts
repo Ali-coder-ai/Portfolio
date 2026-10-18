@@ -10,12 +10,16 @@ export function initialFX() {
   // sudden lurch when the browser is busy during the expand animation.
   gsap.ticker.lagSmoothing(0);
 
-  // Delay unpausing ScrollSmoother until the loading overlay has fully
-  // expanded (~1.3s = 0.2s delay + 1.1s transition). Starting it at the
-  // same time as the CSS expand caused a double-acceleration effect.
+  // Reset scroll position to 0 before unpausing so ScrollSmoother has
+  // zero accumulated distance to "catch up" on — this eliminates the
+  // sudden speed burst mid-animation.
+  smoother.scrollTo(0, false);
+
+  // Unpause ScrollSmoother right after the expand animation finishes
+  // (1.1s expand + small buffer = ~1200ms).
   setTimeout(() => {
     smoother.paused(false);
-  }, 1300);
+  }, 1200);
 
   gsap.to("body", {
     backgroundColor: "#0a0d12",

@@ -28,3 +28,5 @@ backup/
 .env.agents/
 .env
 
+.vercel
+.env*
