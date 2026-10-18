@@ -83,12 +83,12 @@ const Loading = ({ percent }: { percent: number }) => {
       // STEP 3: Start expand transition (1.1s)
       setClicked(true);
 
-      // STEP 4: Wait for expand to finish. Fallback = 1.1s + buffer
+      // STEP 4: Wait for expand to finish. Fallback = 1.25s + buffer
       const wrapEl = wrapRef.current;
       if (wrapEl) {
-        await waitForTransition(wrapEl, "transform", 1200);
+        await waitForTransition(wrapEl, "transform", 1300);
       } else {
-        await new Promise<void>((r) => { const t = setTimeout(r, 1200); cleanups.push(() => clearTimeout(t)); });
+        await new Promise<void>((r) => { const t = setTimeout(r, 1300); cleanups.push(() => clearTimeout(t)); });
       }
       if (cancelled) return;
 

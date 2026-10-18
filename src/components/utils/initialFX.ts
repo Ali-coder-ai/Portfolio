@@ -16,10 +16,10 @@ export function initialFX() {
   smoother.scrollTo(0, false);
 
   // Unpause ScrollSmoother right after the expand animation finishes
-  // (1.1s expand + small buffer = ~1200ms).
+  // (1.25s expand + small buffer = ~1300ms).
   setTimeout(() => {
     smoother.paused(false);
-  }, 1200);
+  }, 1300);
 
   gsap.to("body", {
     backgroundColor: "#0a0d12",
