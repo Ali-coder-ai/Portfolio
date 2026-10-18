@@ -109,7 +109,7 @@ export function initialFX() {
     { opacity: 0, y: 30 },
     {
       opacity: 1,
-      duration: isMobile ? 0.7 : 1.2,
+      duration: isMobile ? 1.2 : 1.2,  // Match other animations duration (1.2s desktop, 0.8s mobile)
       ease: "power1.inOut",
       y: 0,
     },
@@ -121,7 +121,7 @@ export function initialFX() {
     { opacity: 0 },
     {
       opacity: 1,
-      duration: isMobile ? 0.6 : 1.2,
+      duration: isMobile ? 0.8 : 1.2,  // Match other animations (1.2s desktop, 0.8s mobile)
       ease: "power1.inOut",
     },
     0  // Ensure this starts at the same time as other animations (time 0)
