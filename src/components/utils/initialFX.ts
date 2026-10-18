@@ -4,8 +4,19 @@ import { smoother } from "../Navbar";
 
 export function initialFX() {
   document.body.style.overflowY = "auto";
-  smoother.paused(false);
   document.getElementsByTagName("main")[0].classList.add("main-active");
+
+  // Prevent GSAP from "catching up" after a dropped frame — stops the
+  // sudden lurch when the browser is busy during the expand animation.
+  gsap.ticker.lagSmoothing(0);
+
+  // Delay unpausing ScrollSmoother until the loading overlay has fully
+  // expanded (~1.3s = 0.2s delay + 1.1s transition). Starting it at the
+  // same time as the CSS expand caused a double-acceleration effect.
+  setTimeout(() => {
+    smoother.paused(false);
+  }, 1300);
+
   gsap.to("body", {
     backgroundColor: "#0a0d12",
     duration: 0.5,
