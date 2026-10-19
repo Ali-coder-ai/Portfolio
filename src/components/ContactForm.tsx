@@ -149,17 +149,20 @@ const ContactForm = () => {
             feel free to reach out!
           </p>
 
-          {/* Email Section */}
-          <div className="contact-info-item">
-            <div className="contact-info-icon">
-              <FiMail size={20} />
+          {/* Contact Info Container */}
+          <div className="contact-info-container">
+            {/* Email Item */}
+            <div className="contact-info-item">
+              <div className="contact-info-icon">
+                <FiMail size={20} />
+              </div>
+              <a
+                href="mailto:muhammad.ali992283@gmail.com"
+                className="contact-info-link"
+              >
+                muhammad.ali992283@gmail.com
+              </a>
             </div>
-            <a
-              href="mailto:muhammad.ali992283@gmail.com"
-              className="contact-info-link"
-            >
-              muhammad.ali992283@gmail.com
-            </a>
           </div>
         </div>
 
